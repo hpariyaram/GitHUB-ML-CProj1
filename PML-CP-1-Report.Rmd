@@ -1,0 +1,113 @@
+---
+title: Practical Machine Learning - Class Project 1 - Human Activity Recogninition
+  - Machine Learning
+output: pdf_document
+date: "Sunday, June 21, 2015"
+---
+## Executive Summary
+
+    With the advent of wearables and other smart devices with the capability of human activity monitoring, an increasing number of programs associated with Human Activity Recognition has emerged.  The details of such programs and research can be found at: http://groupware.les.inf.puc-rio.br/har[http://groupware.les.inf.puc-rio.br/har].  The wearables such as Jawbone, Nike, UP, Fuelband and Fitbit can be used to collect human wellness realted data and used to develop useful suggestions and programs for fitness.  In this paper, we are taking a set of data that is available from the above cited web source and developing predictions based on the machine learning models.  The data is collected from different activity monitors and the participants were asked to lift the barbell in different ways.  The prediction models are used to predict the ways the exercise is performed.  We engaged Decision Tree and Random Forest machine learning models to predict and found that Random Forest model is best fitting.
+
+## Data Processing
+
+    The data is taken from the HAR web source mentioned above and has excersise infromation with various information. In the 'Weight Lifting Data set', six young participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five ways and some of them are the correct way.  These methods are captured in the variable 'Classe' in the data set.  The 'Classe' variable has five values: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).
+
+    First include all the required R packages to process the data and do the prediction models and the exploratory data analysis.
+
+```{r, message=FALSE}
+library(caret)
+library(randomForest)
+library(rpart)
+library(rpart.plot)
+library(ggplot2)
+library(e1071)
+```
+
+    For reproducibility the random seed is set to 1234.  Also the data is read in from the downloaded data sets in the .CSV format.  Also the the data is cleaned by excluding the NA variables and the irrelevant data variables from the data set.
+
+```{r, cache=TRUE}
+set.seed(1234)
+setwd("C:/Bahul/Coursera/JHU-DataScience/ML/ML-CProj1")
+TrainingSet <- read.csv("pml-training.csv", na.strings=c("NA","#DIV/0!", ""))
+TestingSet <- read.csv("pml-testing.csv", na.strings=c("NA","#DIV/0!", ""))
+TrainingSet<-TrainingSet[,colSums(is.na(TrainingSet)) == 0]
+TestingSet <-TestingSet[,colSums(is.na(TestingSet)) == 0]
+TrainingSet   <-TrainingSet[,-c(1:7)]
+TestingSet <-TestingSet[,-c(1:7)]
+```
+
+### Cross Validation 
+
+   The training data set has 19622 obsevrations and 53 variables, and the testing data set has 20 observations and 53 variables.
+```{r}
+dim(TrainingSet)
+dim(TestingSet)
+```
+   To do the cross validation the data is partitioned into two with 75% and 25% from the training and testing data sets respectively.
+```{r}
+SubSamples <- createDataPartition(y=TrainingSet$classe, p=0.75, list=FALSE)
+SubTraining <- TrainingSet[SubSamples, ] 
+SubTesting <- TrainingSet[-SubSamples, ]
+```
+
+### Exploratory Data Analysis
+
+   As stated in the data processing section, the Classe variable has five values.  The plot 1 in Appendix A, gives the plot of these values with corresponding frequencies.  From the plot we can see the excercise is performed correctly (classe value A) most of the times with roughly 20% (That is 4000/19622).  The rest of the values are incorrect methods as defined in the data processing section and they are closely with 12% to 13% or 2500 occurences.
+  
+## Machine Learning Prediction Models
+
+    The prediction models used are decision tree and the random forest. 
+    
+### How the Prediction Model is bulit
+
+    The data is cleaned and processes as illustrated in the data processing section; and then partitioned within the Training and Testing data sets.  The the decision tree model and Random forest models were engaged.  The best prediction model is chosen with the help of the confusion matrix test on the machine learning algorithms.
+    
+### Decision Tree
+
+    The classe variable in the subTraining data set is used to model the decision tree as below.
+```{r}
+Model1 <- rpart(classe ~ ., data=SubTraining, method="class")
+Prediction1 <- predict(Model1, SubTesting, type = "class")
+```
+    The Plot 2 of the Appendix A is the plot of the decision tree. The machine learning algorithm is tested using the confusion matrix as shown in the Test 1 of Appendix A.
+  
+### Random Forest model
+
+    The Random Forest prediction model is used to do the second model as below.
+```{r}
+Model2 <- randomForest(classe ~. , data=SubTraining, method="class")
+Prediction2 <- predict(Model2, SubTesting, type = "class")
+```
+
+    The machine learning model is tested using the confusion matrix as shown in the Test 2 of Appendix A.
+
+## Results and Conclusion
+
+   The Random Forest model has the better prediction compared to the Decision Tree model.  The Randome Forest model has 0.9951 accuracy and the Decision Tree model has 0.7394 as illustrated by the Confusion Matrix Test.  
+
+## Appendix A
+The section of Appendix A holds the required plots and tests.
+
+### Plot 1: Plot of Classe variable
+```{r}
+plot(SubTraining$classe, col="green", main="Classe variable Plot", xlab="Classe Values", ylab="Frequency")
+
+```
+
+### Plot 2: Decision Tree on Classe Variable
+```{r}
+rpart.plot(Model1, main="Decision Tree", extra=102, under=TRUE, faclen=0)
+```
+
+### Test 1: Confusion Matrix Test on Decision Tree Model
+```{r}
+confusionMatrix(Prediction1, SubTesting$classe)
+```
+
+### Test 2: Confusion Matrix Test on Random Forest Model
+```{r}
+confusionMatrix(Prediction2, SubTesting$classe)
+```
+
+------------------------------------------------------------------
+
