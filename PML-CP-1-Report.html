@@ -58,20 +58,23 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="executive-summary" class="section level2">
 <h2>Executive Summary</h2>
-<pre><code>With the advent of wearables and other smart devices with the capability of human activity monitoring, an increasing number of programs associated with Human Activity Recognition has emerged.  The details of such programs and research can be found at: http://groupware.les.inf.puc-rio.br/har[http://groupware.les.inf.puc-rio.br/har].  The wearables such as Jawbone, Nike, UP, Fuelband and Fitbit can be used to collect human wellness realted data and used to develop useful suggestions and programs for fitness.  In this paper, we are taking a set of data that is available from the above cited web source and developing predictions based on the machine learning models.  The data is collected from different activity monitors and the participants were asked to lift the barbell in different ways.  The prediction models are used to predict the ways the exercise is performed.  We engaged Decision Tree and Random Forest machine learning models to predict and found that Random Forest model is best fitting.</code></pre>
+<pre><code>With the advent of wearables and other smart devices with the capability of</code></pre>
+<p>human activity monitoring, an increasing number of programs associated with Human Activity Recognition has emerged. The details of such programs and research can be found at: <a href="http://groupware.les.inf.puc-rio.br/har[http://groupware.les.inf.pu" class="uri">http://groupware.les.inf.puc-rio.br/har[http://groupware.les.inf.pu</a> c-rio.br/har]. The wearables such as Jawbone, Nike, UP, Fuelband and Fitbit can be used to collect human wellness realted data and used to develop useful suggestions and programs for fitness. In this paper, we are taking a set of data that is available from the above cited web source and developing predictions based on the machine learning models. The data is collected from different activity monitors and the participants were asked to lift the barbell in different ways. The prediction models are used to predict the ways the exercise is performed. We engaged Decision Tree and Random Forest machine learning models to predict and found that Random Forest model is best fitting.</p>
 </div>
 <div id="data-processing" class="section level2">
 <h2>Data Processing</h2>
-<pre><code>The data is taken from the HAR web source mentioned above and has excersise infromation with various information. In the 'Weight Lifting Data set', six young participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five ways and some of them are the correct way.  These methods are captured in the variable 'Classe' in the data set.  The 'Classe' variable has five values: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).
-
-First include all the required R packages to process the data and do the prediction models and the exploratory data analysis.</code></pre>
+<pre><code>The data is taken from the HAR web source mentioned above and has excersise</code></pre>
+<p>infromation with various information. In the ‘Weight Lifting Data set’, six young participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five ways and some of them are the correct way. These methods are captured in the variable ‘Classe’ in the data set. The ‘Classe’ variable has five values: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).</p>
+<pre><code>First include all the required R packages to process the data and do the</code></pre>
+<p>prediction models and the exploratory data analysis.</p>
 <pre class="r"><code>library(caret)
 library(randomForest)
 library(rpart)
 library(rpart.plot)
 library(ggplot2)
 library(e1071)</code></pre>
-<pre><code>For reproducibility the random seed is set to 1234.  Also the data is read in from the downloaded data sets in the .CSV format.  Also the the data is cleaned by excluding the NA variables and the irrelevant data variables from the data set.</code></pre>
+<pre><code>For reproducibility the random seed is set to 1234.  Also the data is read in</code></pre>
+<p>from the downloaded data sets in the .CSV format. Also the the data is cleaned by excluding the NA variables and the irrelevant data variables from the data set.</p>
 <pre class="r"><code>set.seed(1234)
 setwd(&quot;C:/Bahul/Coursera/JHU-DataScience/ML/ML-CProj1&quot;)
 TrainingSet &lt;- read.csv(&quot;pml-training.csv&quot;, na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;, &quot;&quot;))
@@ -102,21 +105,24 @@ SubTesting &lt;- TrainingSet[-SubSamples, ]</code></pre>
 <pre><code>The prediction models used are decision tree and the random forest. </code></pre>
 <div id="how-the-prediction-model-is-bulit" class="section level3">
 <h3>How the Prediction Model is bulit</h3>
-<pre><code>The data is cleaned and processes as illustrated in the data processing section; and then partitioned within the Training and Testing data sets.  The the decision tree model and Random forest models were engaged.  The best prediction model is chosen with the help of the confusion matrix test on the machine learning algorithms.</code></pre>
+<pre><code>The data is cleaned and processes as illustrated in the data processing</code></pre>
+<p>section; and then partitioned within the Training and Testing data sets. The the decision tree model and Random forest models were engaged. The best prediction model is chosen with the help of the confusion matrix test on the machine learning algorithms.</p>
 </div>
 <div id="decision-tree" class="section level3">
 <h3>Decision Tree</h3>
 <pre><code>The classe variable in the subTraining data set is used to model the decision tree as below.</code></pre>
 <pre class="r"><code>Model1 &lt;- rpart(classe ~ ., data=SubTraining, method=&quot;class&quot;)
 Prediction1 &lt;- predict(Model1, SubTesting, type = &quot;class&quot;)</code></pre>
-<pre><code>The Plot 2 of the Appendix A is the plot of the decision tree. The machine learning algorithm is tested using the confusion matrix as shown in the Test 1 of Appendix A.</code></pre>
+<pre><code>The Plot 2 of the Appendix A is the plot of the decision tree. The machine</code></pre>
+<p>learning algorithm is tested using the confusion matrix as shown in the Test 1 of Appendix A.</p>
 </div>
 <div id="random-forest-model" class="section level3">
 <h3>Random Forest model</h3>
 <pre><code>The Random Forest prediction model is used to do the second model as below.</code></pre>
 <pre class="r"><code>Model2 &lt;- randomForest(classe ~. , data=SubTraining, method=&quot;class&quot;)
 Prediction2 &lt;- predict(Model2, SubTesting, type = &quot;class&quot;)</code></pre>
-<pre><code>The machine learning model is tested using the confusion matrix as shown in the Test 2 of Appendix A.</code></pre>
+<pre><code>The machine learning model is tested using the confusion matrix as shown in</code></pre>
+<p>the Test 2 of Appendix A.</p>
 </div>
 </div>
 <div id="results-and-conclusion" class="section level2">
